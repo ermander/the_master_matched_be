@@ -2,8 +2,11 @@ const express = require("express")
 const cors = require("cors");
 const mongoose = require("mongoose");
 const listEndpoints = require("express-list-endpoints")
-const oddsFetcher = require("./oddsFetcher/index")
 const dotenv = require("dotenv")
+// Routes
+const oddsFetcher = require("./oddsFetcher/index")
+const profitTracker = require("./profit-tracker/index")
+
 
 
 // Express server
@@ -12,6 +15,8 @@ const server = express();
 // Cors
 server.use(cors())
 
+
+
 // Dotenv configurations
 dotenv.config();
 
@@ -19,7 +24,9 @@ dotenv.config();
 const port = process.env.PORT;
 
 // Express Routers
+server.use(express.json());
 server.use("/odds", oddsFetcher)
+server.use("/profit-tracker", profitTracker)
 
 // Preview of the current endpoints into the terminal 
 console.log(listEndpoints(server));
@@ -36,6 +43,6 @@ mongoose
       console.log(`working on port ${port}`);
     })
   );
-mongoose.connection.on("connected", () => {
+  mongoose.connection.on("connected", () => {
   console.log("connected to atlas");
 });
