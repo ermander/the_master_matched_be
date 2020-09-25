@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const listEndpoints = require("express-list-endpoints")
 const dotenv = require("dotenv")
 // Routes
-const oddsFetcher = require("./oddsFetcher/index")
+const oddsFetcher = require("./odds-data/index")
 const profitTracker = require("./profit-tracker/index")
 
 
@@ -25,7 +25,7 @@ const port = process.env.PORT;
 
 // Express Routers
 server.use(express.json());
-server.use("/odds", oddsFetcher)
+server.use("/odds-data", oddsFetcher)
 server.use("/profit-tracker", profitTracker)
 
 // Preview of the current endpoints into the terminal 
