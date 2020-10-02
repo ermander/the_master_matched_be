@@ -1,8 +1,12 @@
 const { Schema, model } = require("mongoose")
 
-const matchSchema = new Schema (
+const puntaBancaSchema = new Schema (
     {
         data: {
+            type: String,
+            required: true
+        },
+        ora: {
             type: String,
             required: true
         },
@@ -10,7 +14,11 @@ const matchSchema = new Schema (
             type: String,
             required: false
         },
-        evento: {
+        home: {
+            type: String,
+            required: true
+        },
+        away : {
             type: String,
             required: true
         },
@@ -30,11 +38,24 @@ const matchSchema = new Schema (
             type: String,
             required: true
         },
-        stake: {
+        
+        puntata: {
             type: String,
             required: true
         },
-        quota: {
+        quotaPunta: {
+            type: String,
+            required: true
+        },
+        exchange: {
+            type: String,
+            required: true
+        },        
+        bancata: {
+            type: String,
+            required: true
+        },
+        quotaBancata: {
             type: String,
             required: true
         },
@@ -42,28 +63,30 @@ const matchSchema = new Schema (
             type: String,
             required: false
         },
-        stakeBonus: {
+        puntataBonus: {
             type: String,
-            required: true
+            required: false
         },
-        stakeRimborso: {
+        puntataRimborso: {
             type: String,
             required: false
         },
         commissione: {
             type: String,
-            required: true
+            required: false,
+            default: "5"
         },
         tag: {
             type: String,
             required: false
         },
         inCorso: {
-            type: ["yes", "no"]
+            type: Boolean,
+            default: true
         }
     },
     { timestamps: true }
 )
 
-const matchModel = model("match", matchSchema)
-module.exports = matchModel
+const puntaBancaModel = model("match", puntaBancaSchema)
+module.exports = puntaBancaModel
