@@ -6,6 +6,8 @@ const dotenv = require("dotenv")
 // Routes
 const oddsFetcher = require("./odds-data/index")
 const profitTracker = require("./profit-tracker/index")
+const userRouter = require("./auth/index");
+const loginRouter = require("./auth/index");
 
 
 
@@ -25,6 +27,7 @@ const port = process.env.PORT;
 
 // Express Routers
 server.use(express.json());
+server.use("/", loginRouter)
 server.use("/odds-data", oddsFetcher)
 server.use("/profit-tracker", profitTracker)
 
