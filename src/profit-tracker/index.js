@@ -27,10 +27,11 @@ router.get("/archived", async(req, res) => {
 router.post("/save-match", async(req, res) => {
     try {
         const newMatch = await new puntaBancaModel(req.body)
-        newMatch.save() 
-        res.status(201).send("SAVED!")        
+        newMatch.save()
+        console.log(newMatch)
+        res.status(201).send(newMatch)        
     } catch (error) {
-        console.log("An error has occurred while saving the new match", error)                 
+        res.status(400).send(error)
     }
 })
 

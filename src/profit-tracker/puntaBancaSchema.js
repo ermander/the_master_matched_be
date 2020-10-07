@@ -30,7 +30,7 @@ const puntaBancaSchema = new Schema (
             type: String,
             required: true
         },
-        tipoPunta: {
+        tipoPuntata: {
             type: String,
             required: true
         },
@@ -53,21 +53,21 @@ const puntaBancaSchema = new Schema (
         },        
         bancata: {
             type: String,
-            required: true
-        },
-        quotaBancata: {
-            type: String,
-            required: true
-        },
-        rischio: {
-            type: String,
             required: false
+        },
+        quotaBanca: {
+            type: String,
+            required: true
         },
         puntataBonus: {
             type: String,
             required: false
         },
         puntataRimborso: {
+            type: String,
+            required: false
+        },
+        rischio: {
             type: String,
             required: false
         },
