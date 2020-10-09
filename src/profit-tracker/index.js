@@ -1,4 +1,5 @@
 const express = require("express")
+const { findOne } = require("./puntaBancaSchema")
 const puntaBancaModel = require("./puntaBancaSchema")
 const router = express.Router()
 
@@ -10,6 +11,17 @@ router.get("/in-progress", async(req, res) => {
         res.status(200).send(matches)      
     } catch (error) {
         console.log("An error has occurred while fetching the in-progress matches", error)
+    }
+})
+
+// GET a single match
+router.get("/in-progress/:id", async(req, res) => {
+    try {
+        const id = req.params.id
+        const match = await puntaBancaModel.findOne( { _id: id })
+        res.status(200).send(match)
+    } catch (error) {
+        console.log(error)
     }
 })
 
