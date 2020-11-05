@@ -3,21 +3,22 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const listEndpoints = require("express-list-endpoints")
 const dotenv = require("dotenv")
+
 // Routes
 const oddsFetcher = require("./odds-data/index")
-const profitTracker = require("./profit-tracker/index")
-const userRouter = require("./auth/index");
+const sportRoute = require("./profit-tracker/sport/index")
+const casinoRoute = require("./profit-tracker/casino/index");
+const bookmakers = require("./profit-tracker/bookmakers/index")
+const paymentsRoute = require("./profit-tracker/payments/index")
+const transactionsRoute = require("./profit-tracker/transactions/index")
+const usersRoute = require("./profit-tracker/users/index")
 const loginRouter = require("./auth/index");
-
-
 
 // Express server
 const server = express();
 
 // Cors
 server.use(cors())
-
-
 
 // Dotenv configurations
 dotenv.config();
@@ -29,7 +30,12 @@ const port = process.env.PORT;
 server.use(express.json());
 server.use("/", loginRouter)
 server.use("/odds-data", oddsFetcher)
-server.use("/profit-tracker", profitTracker)
+server.use("/profit-tracker", sportRoute)
+server.use("/profit-tracker", casinoRoute)
+server.use("/profit-tracker", bookmakers)
+server.use("/profit-tracker", paymentsRoute)
+server.use("/profit-tracker", transactionsRoute)
+server.use("/profit-tracker", usersRoute)
 
 // Preview of the current endpoints into the terminal 
 console.log(listEndpoints(server));

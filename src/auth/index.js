@@ -1,6 +1,6 @@
 const express = require("express");
 const { authenticate, refreshToken } = require("./authTools");
-const { authorize } = require("../middlewares/authorize");
+const { authorize } = require("./authorize");
 const { verifyJWT } = require("./authTools");
 const UserModel = require("./schema");
 const loginRouter = express.Router();
