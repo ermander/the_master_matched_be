@@ -1,7 +1,11 @@
 const express = require("express")
+const bookmakerModel = require("../bookmakers/schema")
 
 // Schemas
 const userModel = require("./userSchema")
+const paymentMethodsModel = require("../payments/schema")
+const puntaBancaModel = require("../sport/schema")
+const transactionModel = require("../transactions/schema")
 
 const usersRoute = express.Router()
 
@@ -56,6 +60,20 @@ usersRoute.put("/modify-user", async(req, res) => {
         res.status(200).send("Modified successfully")
     } catch (error) {
         console.log(error)
+    }
+})
+
+// DELETE an existeng user. If an user is deleted, all his kind of records will be deleted too.
+usersRoute.delete("/delete-user/:id", async(req, res) => {
+    try {
+        /* await bookmakerModel.findByIdAndDelete({holderID: req.params.id})
+        await paymentMethodsModel.findByIdAndDelete({holderID: req.params.id})
+        await puntaBancaModel.findByIdAndDelete({holderID: req.params.id})
+        await transactionModel.findByIdAndDelete({holderID: req.params.id})*/
+        await userModel.findOneAndDelete(req.params.id) 
+        res.status(200).send("Deleted successfully")
+    } catch (error) {
+        res.status(404).send(error)
     }
 })
 

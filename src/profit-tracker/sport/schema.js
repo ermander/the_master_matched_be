@@ -37,8 +37,7 @@ const puntaBancaSchema = new Schema (
         book: {
             type: String,
             required: true
-        },
-        
+        },        
         puntata: {
             type: String,
             required: true
@@ -83,6 +82,14 @@ const puntaBancaSchema = new Schema (
         inCorso: {
             type: Boolean,
             default: true
+        },
+        userPuntaID: {
+            type: String,
+            required: true
+        },
+        userBancaID: {
+            type: String,
+            required: true
         }
     },
     { timestamps: true }

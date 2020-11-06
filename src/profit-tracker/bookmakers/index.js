@@ -7,10 +7,10 @@ const defaultBookmakerModel = require("./defaultBookmakerSchema")
 
 const bookmakersRoute = express.Router()
 
-// GET all bookmakers
+// GET all active bookmakers
 bookmakersRoute.get("/bookmakers", async(req, res) => {
     try {
-        const bookmakers = await bookmakerModel.find()
+        const bookmakers = await bookmakerModel.find({ isActive: true })
         if(bookmakers){
             res.status(200).send(bookmakers)
         }else{
@@ -60,15 +60,31 @@ bookmakersRoute.post("/new-bookmaker", async(req, res) => {
             holderID: req.body.holderID,
             bookmakerName: req.body.bookmakerName
         })
+        const checkBookmakerExist = await defaultBookmakerModel.findOne({ bookmakerName: req.body.bookmakerName })
+
+        if(!checkBookmakerExist){
+            res.status(400).send("You have to initialize the new bookmakers!")
+        }
 
         if(checkUniqueness){
-            console.log("You can not create 2 istance of the same bookmaker!")
+            res.status(400).send("You can not create 2 istance of the same bookmaker!")
         }else{
             newBookmaker.save()
             res.status(200).send(newBookmaker)
         }
     } catch (error) {
         console.log(error)
+    }
+})
+
+// DELETE a no-default bookmaker
+bookmakersRoute.delete("/delete-bookmaker/:id", async(req, res) => {
+    try {
+        await bookmakerModel.findByIdAndDelete(req.params.id)
+        res.status(200).send("Deleted!")
+    } catch (error) {
+        console.log(error)
+        res.status(400).send(error)
     }
 })
 

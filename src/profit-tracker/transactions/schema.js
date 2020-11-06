@@ -2,6 +2,10 @@ const { Schema, model } = require("mongoose")
 
 const transactionSchema = new Schema(
     {
+        holderID: {
+            type: String,
+            required: true
+        },
         accountHolder: {
             type: String,
             required: true
@@ -15,7 +19,7 @@ const transactionSchema = new Schema(
             required: false
         },
         movement: {
-            type: String,
+            type: Number,
             required: true
         }
     },

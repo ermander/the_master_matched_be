@@ -24,14 +24,81 @@ paymentsRoute.get("/payment-methods", async(req, res) => {
 paymentsRoute.post("/new-payment-method", async(req, res) => {
     try {
         const newPaymentMethod = await new paymentMethodsModel(req.body)
-        const checkUserExist = await userModel.findOne({name: newPaymentMethod.accountHolder})
-        if(checkUserExist){
-            newPaymentMethod.save()
-            console.log(newPaymentMethod)
-            res.status(200).send(newPaymentMethod)
+        console.log(newPaymentMethod)
+        // Check if there is a user existent who can have payment methods saved
+        const checkUserExist = await userModel.findById({_id: newPaymentMethod.holderID})
+        // Check if the user already have a payment method named the same
+        const checkPaymentMethodExist = await paymentMethodsModel.findOne({accountName: newPaymentMethod.accountName})
+        if(!checkUserExist){
+            console.log("You have to create a new user before!")
+            res.status(400).send("You have to create a new user before!")
+        }else if(checkUserExist && checkPaymentMethodExist){
+            console.log("You can not create 2 istance of the same payment method!")
+            res.status(400).send("You can not create 2 istance of the same payment method!")
         }else{
-            console.log("You have to create a new user before create a payment method")
-        }        
+            console.log(newPaymentMethod)
+            await newPaymentMethod.save()
+            res.status(200).send("New payment method successfully created!")
+        }
+    } catch (error) {
+        console.log(error)
+    }
+})
+
+// PUT una nuova ricarica o spesa
+paymentsRoute.put("/ricarica-spesa", async(req, res) => {
+    try {
+        const data = req.body
+
+        const transfer = await paymentMethodsModel.findOne({
+            _id: data.id,
+            accountName: data.accountName
+        })
+
+        if(!transfer){
+            res.status(400).send("Payment method not found!")
+            console.log("Payment method not found!")
+        }else if(data.type == "Ricarica"){
+            await paymentMethodsModel.findByIdAndUpdate({
+                _id: transfer._id
+            },
+            {
+                balance: parseInt(transfer.balance + data.movement)
+            })
+            res.status(200).send("OK")
+        }else{
+            await paymentMethodsModel.findByIdAndUpdate({
+                _id: transfer._id
+            },
+            {
+                balance: parseInt(transfer.balance - data.movement)
+            })
+            res.status(200).send("OK")
+        }
+
+    } catch (error) {
+        console.log(error)
+    }
+})
+
+// PUT a new one to one trasferment
+paymentsRoute.put("/trasferment", async(req, res) => {
+    try {
+        const data = req.body
+        const receiver = await paymentMethodsModel.findByIdAndUpdate({
+            _id: data.receiver
+        },
+        {
+            balance: parseInt(receiver.balance + data.movement)
+        })
+        const sender = await paymentMethodsModel.findByIdAndUpdate({
+            _id: data.sender
+        },
+        {
+            balance: parseInt(sender.balance - data.movement)
+        })
+        res.status(200).send("OK")
+        console.log("ok")
     } catch (error) {
         console.log(error)
     }

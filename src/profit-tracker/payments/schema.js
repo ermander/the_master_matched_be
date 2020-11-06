@@ -2,6 +2,10 @@ const { Schema, model } = require("mongoose")
 
 const paymentMethodsSchema = new Schema(
     {
+        holderID: {
+            type: String,
+            required: true
+        },
         accountHolder: {
             type: String,
             required: true
@@ -15,7 +19,7 @@ const paymentMethodsSchema = new Schema(
             required: false
         },
         balance: {
-            type: String,
+            type: Number,
             required: false
         }
     },

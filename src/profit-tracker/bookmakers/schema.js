@@ -6,6 +6,10 @@ const bookmakerSchema = new Schema(
             type: String,
             required: true
         },
+        holderName: {
+            type: String,
+            required: false
+        },
         bookmakerName: {
             type: String,
             required: true
