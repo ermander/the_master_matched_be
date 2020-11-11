@@ -14,7 +14,6 @@ usersRoute.get("/get-users", async(req, res) => {
     try {
         const users = await userModel.find()
         if(users){
-            console.log(users)
             res.status(201).send(users)
         }else{
             console.log("No users into the database")

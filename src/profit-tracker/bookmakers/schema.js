@@ -19,7 +19,7 @@ const bookmakerSchema = new Schema(
             required: false
         },
         balance: {
-            type: String,
+            type: Number,
             required: false
         },
         isActive: {

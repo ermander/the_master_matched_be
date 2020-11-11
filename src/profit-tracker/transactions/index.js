@@ -32,7 +32,6 @@ transactionsRoute.get("/get-transactions", async(req, res) => {
 transactionsRoute.post("/save-transaction", async(req, res) => {
     try {
         const newTransaction = await new transactionModel(req.body)
-        delete newTransaction.type
         delete newTransaction._id
         newTransaction.save()
         console.log(newTransaction)

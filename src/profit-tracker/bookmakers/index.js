@@ -2,9 +2,10 @@ const express = require("express")
 
 // Schemas
 const bookmakerModel = require("./schema")
+const paymentMethodModel = require("../payments/schema")
 const userModel = require("../users/userSchema")
 const defaultBookmakerModel = require("./defaultBookmakerSchema")
-
+const paymentMethodsModel = require("../payments/schema")
 const bookmakersRoute = express.Router()
 
 // GET all active bookmakers
@@ -38,11 +39,11 @@ bookmakersRoute.get("/default-bookmakers", async(rea, res) => {
 // POST a default bookmaker
 bookmakersRoute.post("/new-default-bookmaker", async(req, res) => {
     try {
-        const newDefaultBookmaker = await new defaultBookmakerModel(req.body)
-        const checkUniqueness = await defaultBookmakerModel.findOne({ bookmakerName: req.body.bookmakerName})
+        const checkUniqueness = await defaultBookmakerModel.findOne({bookmakerName: req.body.bookmakerName})
         if(checkUniqueness){
             res.status(401).send("You can not create a dupplicate of a bookmaker!")
         }else{
+            const newDefaultBookmaker = new defaultBookmakerModel(req.body)
             await newDefaultBookmaker.save()
             console.log(newDefaultBookmaker)
             res.status(200).send("New bookmakers successfully created!")
@@ -55,7 +56,7 @@ bookmakersRoute.post("/new-default-bookmaker", async(req, res) => {
 // POST a new bookmaker
 bookmakersRoute.post("/new-bookmaker", async(req, res) => {
     try {
-        const newBookmaker = await new bookmakerModel(req.body)
+        const newBookmaker = new bookmakerModel(req.body)
         const checkUniqueness = await bookmakerModel.findOne({
             holderID: req.body.holderID,
             bookmakerName: req.body.bookmakerName
@@ -69,6 +70,8 @@ bookmakersRoute.post("/new-bookmaker", async(req, res) => {
         if(checkUniqueness){
             res.status(400).send("You can not create 2 istance of the same bookmaker!")
         }else{
+            console.log(newBookmaker)
+            newBookmaker.holderID = req.body.holderID
             newBookmaker.save()
             res.status(200).send(newBookmaker)
         }
@@ -85,6 +88,62 @@ bookmakersRoute.delete("/delete-bookmaker/:id", async(req, res) => {
     } catch (error) {
         console.log(error)
         res.status(400).send(error)
+    }
+})
+
+// PUT a transaction between a payment method and a bookmaker
+bookmakersRoute.put("/deposit-into-bookmaker", async(req, res) => {
+    try {
+        const bookmaker = await bookmakerModel.findById({_id: req.body.receiver})
+        const paymentMethod = await paymentMethodModel.findById({_id: req.body.sender})
+        const movement = req.body.movement
+        const paymentMethodBalance = parseInt(paymentMethod.balance)
+        const bookmakerBalance = parseInt(bookmaker.balance)
+
+        // Caso di sovradeposito
+        if(req.body.type==="Deposito" && movement > paymentMethodBalance){
+            console.log("You have not enought credit into the payment method!")
+            res.status(400).send("You have not enought credit into the payment method!")
+        }
+        // Caso di over prelievo
+        else if(req.body.type==="Prelievo" && movement > bookmakerBalance){
+            console.log("You can not withdraw someting you don't have!")
+            res.status(400).send("You can not withdraw something you don't have!")
+        }
+        //Caso di deposito
+        else if(req.body.type==="Deposito"){
+            await bookmakerModel.findByIdAndUpdate({
+                _id: bookmaker._id
+            },
+            {
+                balance: bookmakerBalance + movement
+            })
+
+            await paymentMethodModel.findByIdAndUpdate({
+                _id: paymentMethod._id
+            },{
+                balance: paymentMethodBalance - movement
+            })
+            res.status(200).send("OK")
+        }
+        // Caso di prelievo
+        else if(req.body.type==="Prelievo"){
+            await bookmakerModel.findByIdAndUpdate({
+                _id: bookmaker._id
+            },
+            {
+                balance: bookmakerBalance - movement
+            })
+
+            await paymentMethodModel.findByIdAndUpdate({
+                _id: paymentMethod._id
+            },{
+                balance: paymentMethodBalance + movement
+            })
+            res.status(200).send("OK")
+        }
+    } catch (error) {
+        console.log(error)
     }
 })
 

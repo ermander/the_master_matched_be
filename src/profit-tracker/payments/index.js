@@ -20,6 +20,20 @@ paymentsRoute.get("/payment-methods", async(req, res) => {
     }
 })
 
+//GET a payment methods based on filters
+paymentsRoute.get("/payment-methods/:id", async(req, res) =>  {
+    try {
+        const paymentMethods = await paymentMethodsModel.find({holderID: req.params.id})
+        if(paymentMethods){
+            res.status(200).send(paymentMethods)
+        }else{
+            res.send(404).send("Not found!")
+        }
+    } catch (error) {
+        console.log(error)
+    }
+})
+
 //POST a new payment method
 paymentsRoute.post("/new-payment-method", async(req, res) => {
     try {
@@ -28,12 +42,12 @@ paymentsRoute.post("/new-payment-method", async(req, res) => {
         // Check if there is a user existent who can have payment methods saved
         const checkUserExist = await userModel.findById({_id: newPaymentMethod.holderID})
         // Check if the user already have a payment method named the same
-        const checkPaymentMethodExist = await paymentMethodsModel.findOne({accountName: newPaymentMethod.accountName})
+        const checkPaymentMethodExist = await paymentMethodsModel.findOne({accountName: newPaymentMethod.accountName, holderID: newPaymentMethod.holderID})
         if(!checkUserExist){
             console.log("You have to create a new user before!")
             res.status(400).send("You have to create a new user before!")
         }else if(checkUserExist && checkPaymentMethodExist){
-            console.log("You can not create 2 istance of the same payment method!")
+            console.log("You can not create 2 istance of the same payment method!", checkUserExist, checkPaymentMethodExist)
             res.status(400).send("You can not create 2 istance of the same payment method!")
         }else{
             console.log(newPaymentMethod)
@@ -85,17 +99,22 @@ paymentsRoute.put("/ricarica-spesa", async(req, res) => {
 paymentsRoute.put("/trasferment", async(req, res) => {
     try {
         const data = req.body
-        const receiver = await paymentMethodsModel.findByIdAndUpdate({
-            _id: data.receiver
-        },
-        {
-            balance: parseInt(receiver.balance + data.movement)
+        const receiver = await paymentMethodsModel.findById({_id: data.receiver})
+        const sender = await paymentMethodsModel.findById({_id: data.sender})
+
+        const receiverNewBalance = receiver.balance + data.movement
+        const senderNewBalance = sender.balance - data.movement
+
+        await paymentMethodsModel.findByIdAndUpdate({
+            _id: receiver._id
+        }, {
+            balance: receiverNewBalance
         })
-        const sender = await paymentMethodsModel.findByIdAndUpdate({
-            _id: data.sender
+        await paymentMethodsModel.findByIdAndUpdate({
+            _id: sender._id
         },
         {
-            balance: parseInt(sender.balance - data.movement)
+            balance: senderNewBalance
         })
         res.status(200).send("OK")
         console.log("ok")

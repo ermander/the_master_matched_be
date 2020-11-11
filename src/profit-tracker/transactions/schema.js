@@ -21,6 +21,10 @@ const transactionSchema = new Schema(
         movement: {
             type: Number,
             required: true
+        },
+        type: {
+            type: ["Ricarica", "Spesa", "Deposito", "Prelievo", "Correzione Saldo"],
+            required: false
         }
     },
     { timestamps: true }
