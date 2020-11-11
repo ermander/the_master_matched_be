@@ -40,7 +40,10 @@ sportRoute.get("/archived", async(req, res) => {
 // POST a new match
 sportRoute.post("/save-match", async(req, res) => {
     try {
-        const newMatch = await new puntaBancaModel(req.body)
+        // Check is the user/users have the bookmakers active
+        // If soo, save the new matched bet
+        // Saving the new matched bet
+        const newMatch = new puntaBancaModel(req.body)
         newMatch.save()
         console.log(newMatch)
         res.status(201).send(newMatch)        
