@@ -37,7 +37,11 @@ const puntaBancaSchema = new Schema (
         book: {
             type: String,
             required: true
-        },        
+        },
+        bookmakerId: {
+            type: String,
+            required: true
+        },    
         puntata: {
             type: String,
             required: true
@@ -49,7 +53,11 @@ const puntaBancaSchema = new Schema (
         exchange: {
             type: String,
             required: true
-        },        
+        },
+        exchangeId: {
+            type: String,
+            required: true
+        },
         bancata: {
             type: String,
             required: false
@@ -83,11 +91,11 @@ const puntaBancaSchema = new Schema (
             type: Boolean,
             default: true
         },
-        userPuntaID: {
+        userPuntaId: {
             type: String,
             required: true
         },
-        userBancaID: {
+        userBancaId: {
             type: String,
             required: true
         }

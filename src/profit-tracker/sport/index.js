@@ -2,6 +2,7 @@ const express = require("express")
 
 // Schemas
 const puntaBancaModel = require("./schema")
+const bookmakerModel = require("../bookmakers/schema")
 
 
 const sportRoute = express.Router()
@@ -41,13 +42,33 @@ sportRoute.get("/archived", async(req, res) => {
 sportRoute.post("/save-match", async(req, res) => {
     try {
         // Check is the user/users have the bookmakers active
-        // If soo, save the new matched bet
-        // Saving the new matched bet
-        const newMatch = new puntaBancaModel(req.body)
-        newMatch.save()
-        console.log(newMatch)
-        res.status(201).send(newMatch)        
+        const data = req.body
+        const isPuntaBookActive = await bookmakerModel.findOne({
+            holderID: data.userPuntaId,
+            bookmakerName: data.book
+        })
+        console.log(data)
+        const isBancaBookActive = await bookmakerModel.findOne({
+            holderID: data.userBancaId,
+            bookmakerName: data.exchange
+        })
+        if((!isPuntaBookActive && !isBancaBookActive) || (!isPuntaBookActive && isBancaBookActive) || (isPuntaBookActive && !isBancaBookActive)){
+            console.log(isPuntaBookActive, isBancaBookActive)
+            console.log(data)
+            res.status(404).send("You have to activate the bookmakers before saving the new bet!")
+        }else{
+            data.bookmakerId = isPuntaBookActive._id 
+            data.exchangeId = isBancaBookActive._id
+
+            console.log(data)
+
+            const newMatch = new puntaBancaModel(data)            
+            newMatch.save()
+            console.log(newMatch)
+            res.status(201).send(newMatch)  
+        }      
     } catch (error) {
+        console.log(error)
         res.status(400).send(error)
     }
 })
