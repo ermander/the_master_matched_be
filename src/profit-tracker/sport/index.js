@@ -43,27 +43,26 @@ sportRoute.post("/save-match", async(req, res) => {
     try {
         // Check is the user/users have the bookmakers active
         const data = req.body
+        data.exchange = data.exchange.toLowerCase()
+        data.book = data.book.toLowerCase()
         const isPuntaBookActive = await bookmakerModel.findOne({
             holderID: data.userPuntaId,
             bookmakerName: data.book
         })
-        console.log(data)
         const isBancaBookActive = await bookmakerModel.findOne({
             holderID: data.userBancaId,
             bookmakerName: data.exchange
         })
         if((!isPuntaBookActive && !isBancaBookActive) || (!isPuntaBookActive && isBancaBookActive) || (isPuntaBookActive && !isBancaBookActive)){
-            console.log(isPuntaBookActive, isBancaBookActive)
+            console.log("ciao" + isPuntaBookActive, "ciaone" + isBancaBookActive)
             console.log(data)
             res.status(404).send("You have to activate the bookmakers before saving the new bet!")
         }else{
             data.bookmakerId = isPuntaBookActive._id 
             data.exchangeId = isBancaBookActive._id
 
-            console.log(data)
-
             const newMatch = new puntaBancaModel(data)            
-            newMatch.save()
+            await newMatch.save()
             console.log(newMatch)
             res.status(201).send(newMatch)  
         }      

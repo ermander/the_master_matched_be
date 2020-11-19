@@ -56,7 +56,6 @@ bookmakersRoute.post("/new-default-bookmaker", async(req, res) => {
 // POST a new bookmaker
 bookmakersRoute.post("/new-bookmaker", async(req, res) => {
     try {
-        const newBookmaker = new bookmakerModel(req.body)
         const checkUniqueness = await bookmakerModel.findOne({
             holderID: req.body.holderID,
             bookmakerName: req.body.bookmakerName
@@ -69,8 +68,20 @@ bookmakersRoute.post("/new-bookmaker", async(req, res) => {
 
         if(checkUniqueness){
             res.status(400).send("You can not create 2 istance of the same bookmaker!")
+        }
+        
+        if(req.body.bookmakerName == "Tutti"){
+            const allBookmakers = await defaultBookmakerModel.find()
+            console.log(allBookmakers)
+            for(let i=0; i<allBookmakers.length; i++){
+                let newBookmaker = new bookmakerModel(req.body)
+                newBookmaker.holderID = req.body.holderID
+                newBookmaker.bookmakerName = allBookmakers[i].bookmakerName.toLowerCase()
+                await newBookmaker.save()
+            }            
+            res.status(200).send("ok")
         }else{
-            console.log(newBookmaker)
+            let newBookmaker = new bookmakerModel(req.body)
             newBookmaker.holderID = req.body.holderID
             newBookmaker.save()
             res.status(200).send(newBookmaker)

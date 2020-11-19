@@ -1,4 +1,4 @@
-const RegistrationModel = require("../auth/schema");
+const RegistrationModel = require("../profit-tracker/users/userSchema");
 const { verifyJWT } = require("./authTools");
 
 const authorize = async (req, res, next) => {

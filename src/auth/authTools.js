@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const User = require("./schema");
+const User = require("../profit-tracker/users/userSchema");
 
 const authenticate = async (user) => {
   try {

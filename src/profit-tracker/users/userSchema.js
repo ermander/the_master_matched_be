@@ -1,4 +1,5 @@
 const { Schema, model } = require("mongoose")
+const v = require("validator");
 
 const userSchema = new Schema (
     {
@@ -9,7 +10,7 @@ const userSchema = new Schema (
         description: {
             type: String,
             required: false
-        }
+        },
     },
     { timestamps: true }
 )

@@ -12,7 +12,7 @@ const bookmakers = require("./profit-tracker/bookmakers/index")
 const paymentsRoute = require("./profit-tracker/payments/index")
 const transactionsRoute = require("./profit-tracker/transactions/index")
 const usersRoute = require("./profit-tracker/users/index")
-const loginRouter = require("./auth/index");
+const authRoute = require("./auth/index");
 
 // Express server
 const server = express();
@@ -28,7 +28,7 @@ const port = process.env.PORT;
 
 // Express Routers
 server.use(express.json());
-server.use("/", loginRouter)
+server.use("/", authRoute)
 server.use("/odds-data", oddsFetcher)
 server.use("/profit-tracker", sportRoute)
 server.use("/profit-tracker", casinoRoute)
@@ -36,6 +36,9 @@ server.use("/profit-tracker", bookmakers)
 server.use("/profit-tracker", paymentsRoute)
 server.use("/profit-tracker", transactionsRoute)
 server.use("/profit-tracker", usersRoute)
+
+// Auth Route Middlewares
+server.use('/user/', authRoute)
 
 // Preview of the current endpoints into the terminal 
 console.log(listEndpoints(server));
