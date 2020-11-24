@@ -3,6 +3,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const listEndpoints = require("express-list-endpoints")
 const dotenv = require("dotenv")
+const bodyParser = require('body-parser') 
 
 // Routes
 const oddsFetcher = require("./odds-data/index")
@@ -27,7 +28,7 @@ dotenv.config();
 const port = process.env.PORT;
 
 // Express Routers
-server.use(express.json());
+server.use(express.json({ limit: 10000000 }));
 server.use("/", authRoute)
 server.use("/odds-data", oddsFetcher)
 server.use("/profit-tracker", sportRoute)
